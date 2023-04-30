@@ -1,0 +1,6 @@
+checkpoint
+*.zip
+weights.best.*
+data/
+glove/
+venv/
