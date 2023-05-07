@@ -5,9 +5,9 @@ import torchvision.transforms as transforms
 import cv2 as cv
 
 
-def load_ds(base_path):
-    bikes = [(f, 0) for f in glob.glob(f'{base_path}/Bike/*')]
-    cars = [(f, 1) for f in glob.glob(f'{base_path}/Car/*')]
+def load_ds(base_path, cars='cars', bikes='bikes'):
+    bikes = [(f, 0) for f in glob.glob(f'{base_path}/{bikes}/*')]
+    cars = [(f, 1) for f in glob.glob(f'{base_path}/{cars}/*')]
 
     return cars + bikes
 
@@ -18,6 +18,7 @@ def load_training_ds(signaller, basepath):
     sigs = []
     for img, label in imgs:
         img = signaller(cv.imread(img))
+        sigs.append((img, label))
 
     random.shuffle(sigs)
 
@@ -33,6 +34,15 @@ def resnet_transform():
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406],
                                      [0.229, 0.224, 0.225]),
+            ])
+
+
+def cnn_transform():
+    return transforms.Compose(
+            [
+                transforms.Grayscale(),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5), (0.5)),
             ])
 
 

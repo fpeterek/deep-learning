@@ -12,10 +12,10 @@ class CarBikeDS(Dataset):
         self.transform = transform
         self.target_transform = target_transform
 
-        for img_name in glob.glob(f'{car_dir}/*'):
+        for img_name in glob.glob(f'{car_dir.strip("/")}/*'):
             self.imgs.append((img_name, 1, ))
 
-        for img_name in glob.glob(f'{bike_dir}/*'):
+        for img_name in glob.glob(f'{bike_dir.strip("/")}/*'):
             self.imgs.append((img_name, 0, ))
 
     def __len__(self):

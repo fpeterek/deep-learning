@@ -27,7 +27,6 @@ def rotate(img):
 
 
 def data_enhancement(img):
-    img = img_96(img)
     rot = rotate(img)
     return [img, rot]
 
@@ -48,36 +47,67 @@ def save_imgs(imgs, parent, imtype):
         cv.imwrite(path, img)
 
 
+def split(ds) -> tuple[list, list]:
+    train, test = [], []
+
+    for i in ds:
+        dataset = test if random.random() < 0.2 else train
+        dataset.append(i)
+
+    return train, test
+
+
 def create_96(cars, bikes):
     cars = [img_96(car) for car in cars]
     bikes = [img_96(bike) for bike in bikes]
-    save_imgs(cars, 'data/96/', 'cars')
-    save_imgs(bikes, 'data/96/', 'bikes')
+
+    cars_train, cars_test = split(cars)
+    bikes_train, bikes_test = split(bikes)
+
+    save_imgs(cars_train, 'data/96/train/', 'cars')
+    save_imgs(cars_test, 'data/96/test/', 'cars')
+    save_imgs(bikes_train, 'data/96/train/', 'bikes')
+    save_imgs(bikes_test, 'data/96/test/', 'bikes')
 
 
 def create_resnet(cars, bikes):
     cars = [resnet_img(car) for car in cars]
     bikes = [resnet_img(bike) for bike in bikes]
-    save_imgs(cars, 'data/resnet/', 'cars')
-    save_imgs(bikes, 'data/resnet/', 'bikes')
+
+    cars_train, cars_test = split(cars)
+    bikes_train, bikes_test = split(bikes)
+
+    save_imgs(cars_train, 'data/resnet/train/', 'cars')
+    save_imgs(cars_test, 'data/resnet/test/', 'cars')
+    save_imgs(bikes_train, 'data/resnet/train/', 'bikes')
+    save_imgs(bikes_test, 'data/resnet/test/', 'bikes')
 
 
 def create_enhanced(cars, bikes):
+    cars = [img_96(car) for car in cars]
+    bikes = [img_96(bike) for bike in bikes]
+
+    cars_train, cars_test = split(cars)
+    bikes_train, bikes_test = split(bikes)
+
     c = []
     b = []
 
-    for car in cars:
+    for car in cars_train:
         c += data_enhancement(car)
 
-    for bike in bikes:
+    for bike in bikes_train:
         b += data_enhancement(bike)
 
-    save_imgs(c, 'data/enhanced/', 'cars')
-    save_imgs(b, 'data/enhanced/', 'bikes')
+    save_imgs(c, 'data/enhanced/train/', 'cars')
+    save_imgs(b, 'data/enhanced/train/', 'bikes')
+
+    save_imgs(cars_test, 'data/enhanced/test/', 'cars')
+    save_imgs(bikes_test, 'data/enhanced/test/', 'bikes')
 
 
 def main():
-    data = util.load_ds('data/Car-Bike-Dataset/')
+    data = util.load_ds('data/Car-Bike-Dataset/', cars='Car', bikes='Bike')
 
     cars = [f for f, t in data if t == 1]
     bikes = [f for f, t in data if t == 0]
